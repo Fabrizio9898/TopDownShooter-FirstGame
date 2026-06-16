@@ -6,7 +6,7 @@ public class PlayerShoot : MonoBehaviour
     [Header("Shooting Settings")]
     [Tooltip("El Prefab de la bala que vamos a instanciar")]
     [SerializeField] private GameObject bulletPrefab;
-    [Tooltip("El punto exacto desde donde sale la bala (GameObject vacío en la punta del arma)")]
+    [Tooltip("El punto exacto desde donde sale la bala")]
     [SerializeField] private Transform firePoint;
     [Tooltip("Tiempo en segundos entre cada disparo")]
     [SerializeField] private float fireRate = 0.2f;
@@ -25,7 +25,7 @@ public class PlayerShoot : MonoBehaviour
 
         // isPressed permite fuego automático si mantenés apretado. 
         // Si querés que sea un solo tiro por click, cambialo por wasPressedThisFrame.
-        if (Mouse.current.leftButton.isPressed && Time.time >= nextFireTime)
+        if (Mouse.current.leftButton.wasPressedThisFrame && Time.time >= nextFireTime)
         {
             Shoot();
         }
