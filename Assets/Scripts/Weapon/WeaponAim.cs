@@ -27,18 +27,16 @@ public class WeaponAim : MonoBehaviour
         Vector3 aimDirection = (mouseWorldPosition - transform.position).normalized;
         float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
 
-        // 1. Aplicamos la rotación normal
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
-        // 2. ¡EL ARREGLO! Si el arma apunta a la izquierda, la damos vuelta en el eje Y.
         Vector3 aimLocalScale = Vector3.one;
         if (angle > 90 || angle < -90)
         {
-            aimLocalScale.y = -1f; // La endereza cuando mira a la izquierda
+            aimLocalScale.y = -1f;
         }
         else
         {
-            aimLocalScale.y = 1f;  // La deja normal cuando mira a la derecha
+            aimLocalScale.y = 1f;  
         }
         transform.localScale = aimLocalScale;
     }

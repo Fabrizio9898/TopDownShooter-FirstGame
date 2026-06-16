@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class PlayerShoot : MonoBehaviour
 {
@@ -11,11 +12,10 @@ public class PlayerShoot : MonoBehaviour
     [Tooltip("Tiempo en segundos entre cada disparo")]
     [SerializeField] private float fireRate = 0.2f;
 
-    [Header("Animation")]
-    [Tooltip("El Animator que controla la animación del arma/manos")]
-    [SerializeField] private Animator weaponAnimator;
-    [Tooltip("El nombre del Trigger en el Animator")]
-    [SerializeField] private string shootTriggerName = "Shoot";
+
+    [Header("Efectos Visuales")]
+    [SerializeField] private GameObject muzzleFlashObject;
+    [SerializeField] private float flashDuration = 0.05f;
 
     private float nextFireTime;
 
@@ -34,15 +34,22 @@ public class PlayerShoot : MonoBehaviour
     private void Shoot()
     {
         nextFireTime = Time.time + fireRate;
-
-        if (weaponAnimator != null)
-        {
-            weaponAnimator.SetTrigger(shootTriggerName);
-        }
-
         if (bulletPrefab != null && firePoint != null)
         {
             Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         }
+        if (muzzleFlashObject != null)
+        {
+            StartCoroutine(ShowMuzzleFlash());
+        }
+    }
+
+    private IEnumerator ShowMuzzleFlash()
+    {
+
+        muzzleFlashObject.SetActive(true);
+        yield return new WaitForSeconds(flashDuration);
+        muzzleFlashObject.SetActive(false);
+
     }
 }
