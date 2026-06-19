@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Configuración")]
     [Tooltip("Velocidad de movimiento del jugador")]
-    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] private float moveSpeed = 4f;
 
     [Header("Referencias")]
     [SerializeField] private Animator animator;

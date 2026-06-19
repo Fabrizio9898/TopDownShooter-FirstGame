@@ -3,11 +3,19 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [Header("Bullet Settings")]
-    [SerializeField] private float speed = 100f;
+    [SerializeField] private float speed = 15f;
     [SerializeField] private float lifeTime = 3f;
+    private int damage;
+
+    private int enemyLayer;
+    private int collisionLayer;
 
     private void Start()
     {
+     
+        enemyLayer = LayerMask.NameToLayer("Enemy");
+        collisionLayer = LayerMask.NameToLayer("Collision");
+
         Destroy(gameObject, lifeTime);
     }
 
@@ -16,14 +24,25 @@ public class Bullet : MonoBehaviour
         transform.Translate(Vector3.right * speed * Time.deltaTime);
     }
 
+    public void SetDamage(int newDamage)
+    {
+        damage = newDamage;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy"))
+        int layerTocada = collision.gameObject.layer;
+
+        if (layerTocada == enemyLayer)
         {
-            Debug.Log("Le pegaste a un enemigo!");
+         
+            if (collision.TryGetComponent(out Health enemyHealth))
+            {
+                enemyHealth.TakeDamage(damage);
+            }
             Destroy(gameObject);
         }
-        else if (collision.CompareTag("Wall"))
+        else if (layerTocada == collisionLayer)
         {
             Destroy(gameObject);
         }

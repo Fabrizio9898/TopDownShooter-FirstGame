@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
+  - Walls
   layers:
   - Default
   - TransparentFX
@@ -12,7 +13,7 @@ TagManager:
   - Ground
   - Water
   - UI
-  - Walls
+  - Collision
   - Player
   - Enemy
   - Interactable
@@ -47,6 +48,9 @@ TagManager:
     locked: 0
   - name: Environment
     uniqueID: 2689443191
+    locked: 0
+  - name: Collision
+    uniqueID: 2763456643
     locked: 0
   - name: Entities
     uniqueID: 778757599

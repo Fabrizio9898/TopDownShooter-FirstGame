@@ -4,40 +4,99 @@ using System.Collections;
 
 public class PlayerShoot : MonoBehaviour
 {
+
+
+
+    [Header("Sistema de Armas")]
+    [Tooltip("ScriptableObjects ")]
+    [SerializeField] private WeaponData[] weapons;
+    [Tooltip("El SpriteRenderer de la mano/arma del jugador")]
+    [SerializeField] private SpriteRenderer weaponSpriteRenderer;
+
+
+
     [Header("Shooting Settings")]
     [Tooltip("El Prefab de la bala que vamos a instanciar")]
     [SerializeField] private GameObject bulletPrefab;
     [Tooltip("El punto exacto desde donde sale la bala")]
     [SerializeField] private Transform firePoint;
-    [Tooltip("Tiempo en segundos entre cada disparo")]
-    [SerializeField] private float fireRate = 0.2f;
+   
 
 
     [Header("Efectos Visuales")]
     [SerializeField] private GameObject muzzleFlashObject;
     [SerializeField] private float flashDuration = 0.05f;
 
+    private int currentWeaponIndex = 0;
+    private WeaponData currentWeapon;
     private float nextFireTime;
+    private void Start()
+    {
+        if (weapons.Length > 0)
+        {
+            EquipWeapon(0);
+        }
+        else
+        {
+            Debug.LogWarning("No se han asignado armas al PlayerShoot.");
+        }
+
+        if (muzzleFlashObject != null)
+        {
+            muzzleFlashObject.SetActive(false);
+        }
+    }
 
     private void Update()
     {
+        HandleWeaponSwitch();
+
         if (Mouse.current == null) return;
 
-        // isPressed permite fuego automático si mantenés apretado. 
-        // Si querés que sea un solo tiro por click, cambialo por wasPressedThisFrame.
+       
         if (Mouse.current.leftButton.wasPressedThisFrame && Time.time >= nextFireTime)
         {
             Shoot();
         }
     }
 
+    private void HandleWeaponSwitch()
+    {
+        if (Keyboard.current == null) return;
+
+        if (Keyboard.current.digit1Key.wasPressedThisFrame && weapons.Length > 0) EquipWeapon(0);
+        if (Keyboard.current.digit2Key.wasPressedThisFrame && weapons.Length > 1) EquipWeapon(1);
+        if (Keyboard.current.digit3Key.wasPressedThisFrame && weapons.Length > 2) EquipWeapon(2);
+    }
+
+    private void EquipWeapon(int index)
+    {
+        currentWeaponIndex = index;
+        currentWeapon = weapons[currentWeaponIndex];
+
+        if (weaponSpriteRenderer != null)
+        {
+            weaponSpriteRenderer.sprite = currentWeapon.weaponSprite;
+        }
+
+        if (firePoint != null)
+        {
+            firePoint.localPosition = currentWeapon.firePointOffset;
+        }
+    }
+
     private void Shoot()
     {
-        nextFireTime = Time.time + fireRate;
+        nextFireTime = Time.time + currentWeapon.fireRate;
         if (bulletPrefab != null && firePoint != null)
         {
-            Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            GameObject newBullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            if (newBullet.TryGetComponent(out Bullet bulletScript))
+            {
+                bulletScript.SetDamage(currentWeapon.damage);
+            }
         }
+
         if (muzzleFlashObject != null)
         {
             StartCoroutine(ShowMuzzleFlash());
