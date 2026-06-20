@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
-
+using System;
 public class PlayerShoot : MonoBehaviour
 {
 
-
-
+    public static event Action<int> OnWeaponChanged;
+    
     [Header("Sistema de Armas")]
     [Tooltip("ScriptableObjects ")]
     [SerializeField] private WeaponData[] weapons;
@@ -30,6 +30,11 @@ public class PlayerShoot : MonoBehaviour
     private int currentWeaponIndex = 0;
     private WeaponData currentWeapon;
     private float nextFireTime;
+
+    public WeaponData[] GetWeapons() => weapons;
+    public int GetCurrentWeaponIndex() => currentWeaponIndex;
+
+
     private void Start()
     {
         if (weapons.Length > 0)
@@ -83,6 +88,8 @@ public class PlayerShoot : MonoBehaviour
         {
             firePoint.localPosition = currentWeapon.firePointOffset;
         }
+
+        OnWeaponChanged?.Invoke(currentWeaponIndex);
     }
 
     private void Shoot()

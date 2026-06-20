@@ -1,12 +1,22 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Pantallas de UI")]
     [Tooltip("Arrastrá acá tu panel de Victoria")]
-    [SerializeField] private GameObject victoryScreen;
+    [SerializeField] private GameObject victoryPanel;
+
     [Tooltip("Arrastrá acá tu panel de Derrota")]
-    [SerializeField] private GameObject defeatScreen;
+    [SerializeField] private GameObject defeatPanel;
+
+
+    [Header("Pausa")]
+    [SerializeField] private GameObject pausePanel;
+    private bool isPaused = false;
+
 
     [Header("Referencias")]
     [Tooltip("Arrastrá acá a tu Player (el que tiene el script Health)")]
@@ -16,18 +26,14 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // 1. Nos suscribimos a la muerte del jugador
         if (playerHealth != null)
         {
             playerHealth.OnDie += TriggerDefeat;
         }
 
-        // 2. Buscamos a TODOS los enemigos en el mapa y los contamos
-        // (Asegurate de que tus enemigos tengan la etiqueta "Enemy")
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         totalEnemies = enemies.Length;
 
-        // 3. Nos suscribimos a la muerte de CADA UNO de los enemigos
         foreach (GameObject enemyObj in enemies)
         {
             Health enemyHealth = enemyObj.GetComponent<Health>();
@@ -38,12 +44,42 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Esta función se ejecuta CADA VEZ que un enemigo pega el grito de "OnDie"
+
+    private void Update()
+    {
+        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+        {
+
+            bool canPause = (defeatPanel == null || !defeatPanel.activeSelf) &&
+                            (victoryPanel == null || !victoryPanel.activeSelf);
+
+            if (canPause)
+            {
+                TogglePause();
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.OnDie -= TriggerDefeat;
+        }
+
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemyObj in enemies)
+        {
+            if (enemyObj != null && enemyObj.TryGetComponent(out Health enemyHealth))
+            {
+                enemyHealth.OnDie -= EnemyDied;
+            }
+        }
+    }
+
     private void EnemyDied()
     {
-        totalEnemies--; // Restamos 1 al contador
-
-        // Si ya no quedan enemigos... ¡Ganamos!
+        totalEnemies--; 
         if (totalEnemies <= 0)
         {
             TriggerVictory();
@@ -53,18 +89,40 @@ public class GameManager : MonoBehaviour
     private void TriggerDefeat()
     {
         Debug.Log("Perdiste...");
-        if (defeatScreen != null) defeatScreen.SetActive(true);
-
-        // Frena el tiempo para que el juego se detenga
+        if (defeatPanel != null) defeatPanel.SetActive(true);
         Time.timeScale = 0f;
     }
 
     private void TriggerVictory()
     {
         Debug.Log("¡Ganaste!");
-        if (victoryScreen != null) victoryScreen.SetActive(true);
+        if (victoryPanel != null) victoryPanel.SetActive(true);
 
-        // Frena el tiempo
         Time.timeScale = 0f;
     }
+
+
+    public void TogglePause()
+    {
+        isPaused = !isPaused;
+        Time.timeScale = isPaused ? 0f : 1f;
+
+        if (pausePanel != null)
+        {
+            pausePanel.SetActive(isPaused);
+        }
+    }
+
+    public void Retry()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void GoToMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(0);
+    }
+
 }
