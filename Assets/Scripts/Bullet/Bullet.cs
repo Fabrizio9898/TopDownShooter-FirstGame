@@ -7,15 +7,11 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float lifeTime = 3f;
     private int damage;
 
-    private int enemyLayer;
     private int collisionLayer;
 
     private void Start()
     {
-     
-        enemyLayer = LayerMask.NameToLayer("Enemy");
         collisionLayer = LayerMask.NameToLayer("Collision");
-
         Destroy(gameObject, lifeTime);
     }
 
@@ -29,20 +25,21 @@ public class Bullet : MonoBehaviour
         damage = newDamage;
     }
 
+    // Este es el método que importa para detectar el choque
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        int layerTocada = collision.gameObject.layer;
+        Debug.Log("La bala chocó con: " + collision.gameObject.name);
 
-        if (layerTocada == enemyLayer)
+        if (collision.TryGetComponent(out Health enemyHealth))
         {
-         
-            if (collision.TryGetComponent(out Health enemyHealth))
+            if (!collision.CompareTag("Player"))
             {
+                Debug.Log("¡Haciendo " + damage + " de daño al enemigo!");
                 enemyHealth.TakeDamage(damage);
+                Destroy(gameObject);
             }
-            Destroy(gameObject);
         }
-        else if (layerTocada == collisionLayer)
+        else if (collision.gameObject.layer == collisionLayer)
         {
             Destroy(gameObject);
         }

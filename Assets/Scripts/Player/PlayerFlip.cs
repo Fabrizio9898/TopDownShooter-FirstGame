@@ -23,7 +23,6 @@ public class PlayerFlip : MonoBehaviour
         Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mouseScreenPosition);
 
-        // 2. Comparamos la posición X del mouse con la del jugador
         if (mouseWorldPosition.x < transform.position.x)
         {
             // El mouse está a la izquierda: Espejamos el dibujo
