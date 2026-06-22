@@ -16,7 +16,6 @@ public class UIWeaponSlot : MonoBehaviour
         canvasGroup = GetComponent<CanvasGroup>();
     }
 
-    // Inicializa visualmente el slot con el sprite del ScriptableObject
     public void Setup(Sprite weaponIcon, int slotNumber)
     {
         if (weaponIcon != null)
@@ -34,13 +33,12 @@ public class UIWeaponSlot : MonoBehaviour
         }
     }
 
-    // Cambia el estado visual dependiendo de si está activa o no
+
     public void SetState(bool isActive)
     {
         if (activeBorder != null)
             activeBorder.SetActive(isActive);
 
-        // Si está activa opacidad al 100% (1f), si no, baja al 40% (0.4f)
         if (canvasGroup != null)
             canvasGroup.alpha = isActive ? 1f : 0.4f;
     }
