@@ -38,7 +38,6 @@ public class EnemyAI : MonoBehaviour
         {
             navMeshAgent.SetDestination(player.position);
 
-            // Voltear el sprite según la dirección
             if (navMeshAgent.velocity.x > 0.01f)
             {
                 transform.localScale = new Vector3(Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);

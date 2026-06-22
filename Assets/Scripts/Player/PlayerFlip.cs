@@ -19,18 +19,15 @@ public class PlayerFlip : MonoBehaviour
     {
         if (Mouse.current == null || playerSprite == null) return;
 
-        // 1. Buscamos dónde está el mouse en el mundo
         Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mouseScreenPosition);
 
         if (mouseWorldPosition.x < transform.position.x)
         {
-            // El mouse está a la izquierda: Espejamos el dibujo
             playerSprite.flipX = true;
         }
         else
         {
-            // El mouse está a la derecha: Lo dejamos normal
             playerSprite.flipX = false;
         }
     }
